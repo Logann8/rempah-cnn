@@ -1,0 +1,2 @@
+# rempah-cnn
+uas pemodelan
