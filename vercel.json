@@ -1,11 +1,11 @@
 {
   "version": 2,
   "functions": {
-    "wsgi.py": {
+    "api/wsgi.py": {
       "runtime": "python3.9"
     }
   },
   "routes": [
-    { "src": "/(.*)", "dest": "wsgi.py" }
+    { "src": "/(.*)", "dest": "api/wsgi.py" }
   ]
 }
