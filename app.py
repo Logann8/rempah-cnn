@@ -3,11 +3,25 @@ import tensorflow as tf
 import numpy as np
 from tensorflow.keras.preprocessing import image
 import os
+import requests
 
 app = Flask(__name__, template_folder="templates", static_folder="static")
 
-# Memuat model yang telah dilatih
-MODEL_PATH = r'D:\Tugas\Pemodelan\UAS Pemodelan\rempah_cnn_project\models\rempah_cnn_model.keras'
+# URL model di Google Drive
+MODEL_URL = "https://drive.google.com/uc?id=1BO42GTgrPt2na6hAGkWdwWEdorEPRu7Z"
+MODEL_PATH = "models/rempah_cnn_model.keras"
+
+# Cek apakah model sudah ada, jika belum maka download dari Google Drive
+if not os.path.exists(MODEL_PATH):
+    print("Mengunduh model dari Google Drive...")
+    os.makedirs("models", exist_ok=True)
+    response = requests.get(MODEL_URL, stream=True)
+    with open(MODEL_PATH, "wb") as file:
+        for chunk in response.iter_content(chunk_size=1024):
+            file.write(chunk)
+    print("Model berhasil diunduh!")
+
+# Memuat model
 model = tf.keras.models.load_model(MODEL_PATH)
 
 # Kelas rempah-rempah
