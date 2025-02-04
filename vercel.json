@@ -2,7 +2,7 @@
   "version": 2,
   "functions": {
     "api/wsgi.py": {
-      "runtime": "python3.9"
+      "runtime": "python@latest"
     }
   },
   "routes": [
