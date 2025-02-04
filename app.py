@@ -13,7 +13,7 @@ MODEL_PATH = "models/rempah_cnn_model.keras"
 
 # Cek apakah model sudah ada, jika belum maka download dari Google Drive
 if not os.path.exists(MODEL_PATH):
-    print("Mengunduh model dari Google Drive...")
+    print("Mengunduh model dari Google Drive... (Hanya pertama kali)")
     os.makedirs("models", exist_ok=True)
     response = requests.get(MODEL_URL, stream=True)
     with open(MODEL_PATH, "wb") as file:
@@ -22,7 +22,9 @@ if not os.path.exists(MODEL_PATH):
     print("Model berhasil diunduh!")
 
 # Memuat model
+print("Memuat model...")
 model = tf.keras.models.load_model(MODEL_PATH)
+print("Model berhasil dimuat!")
 
 # Kelas rempah-rempah
 class_names = ['jahe', 'kencur', 'kunyit', 'lengkuas']
