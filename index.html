@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Prediksi Rempah-Rempah</title>
+    <link rel="stylesheet" href="/static/styles.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <div class="container">
+        <h1>Identifikasi Rempah-Rempah</h1>
+        <input type="file" id="upload" accept="image/*">
+        <button onclick="uploadImage()">Prediksi</button>
+        <div id="result"></div>
+        <img id="preview" src="" alt="Preview" style="display: none;">
+        <canvas id="accuracyChart" width="400" height="400" style="display: none;"></canvas>
+    </div>
+
+    <script>
+        function uploadImage() {
+            let fileInput = document.getElementById("upload");
+            if (fileInput.files.length === 0) {
+                alert("Pilih gambar terlebih dahulu!");
+                return;
+            }
+            let formData = new FormData();
+            formData.append("file", fileInput.files[0]);
+
+            fetch("/predict", {
+                method: "POST",
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById("result").innerHTML = `
+                    <h2>Hasil Prediksi:</h2>
+                    <p><strong>Kelas:</strong> ${data.class}</p>
+                    <p><strong>Akurasi:</strong> ${(data.confidence * 100).toFixed(2)}%</p>
+                `;
+                let preview = document.getElementById("preview");
+                preview.src = URL.createObjectURL(fileInput.files[0]);
+                preview.style.display = "block";
+                
+                let ctx = document.getElementById("accuracyChart").getContext("2d");
+                document.getElementById("accuracyChart").style.display = "block";
+                
+                // Contoh data pelatihan dan pengujian (Anda bisa menyesuaikan sesuai data sebenarnya)
+                const epochs = Array.from({ length: 50 }, (_, i) => i + 1); // 1-50
+                const trainAccuracy = epochs.map(epoch => Math.random() * 0.35 + 0.1); // Data dummy
+                const testAccuracy = epochs.map(epoch => Math.random() * 0.35 + 0.1); // Data dummy
+                
+                new Chart(ctx, {
+                    type: 'line',
+                    data: {
+                        labels: epochs,
+                        datasets: [
+                            {
+                                label: 'Train Accuracy',
+                                data: trainAccuracy,
+                                borderColor: 'rgba(0, 123, 255, 1)',
+                                backgroundColor: 'rgba(0, 123, 255, 0.2)',
+                                fill: true,
+                                tension: 0.4
+                            },
+                            {
+                                label: 'Test Accuracy',
+                                data: testAccuracy,
+                                borderColor: 'rgba(255, 99, 132, 1)',
+                                backgroundColor: 'rgba(255, 99, 132, 0.2)',
+                                fill: true,
+                                tension: 0.4
+                            }
+                        ]
+                    },
+                    options: {
+                        responsive: true,
+                        plugins: {
+                            title: {
+                                display: true,
+                                text: 'Model Accuracy'
+                            }
+                        },
+                        scales: {
+                            x: {
+                                title: {
+                                    display: true,
+                                    text: 'Epochs'
+                                }
+                            },
+                            y: {
+                                title: {
+                                    display: true,
+                                    text: 'Accuracy'
+                                },
+                                beginAtZero: true,
+                                max: 1
+                            }
+                        }
+                    }
+                });
+            })
+            .catch(error => console.error("Error:", error));
+        }
+    </script>
+</body>
+</html>
